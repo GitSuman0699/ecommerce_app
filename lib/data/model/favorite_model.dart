@@ -1,8 +1,16 @@
 class FavoriteModel {
   int? statusCode;
   List<Wishlist>? wishlist;
+  int? totalItems;
+  int? currentPage;
+  int? totalPages;
 
-  FavoriteModel({this.statusCode, this.wishlist});
+  FavoriteModel(
+      {this.statusCode,
+      this.wishlist,
+      this.totalItems,
+      this.currentPage,
+      this.totalPages});
 
   FavoriteModel.fromJson(Map<String, dynamic> json) {
     statusCode = json['status_code'];
@@ -12,6 +20,9 @@ class FavoriteModel {
         wishlist!.add(new Wishlist.fromJson(v));
       });
     }
+    totalItems = json['total_items'];
+    currentPage = json['current_page'];
+    totalPages = json['total_pages'];
   }
 
   Map<String, dynamic> toJson() {
@@ -20,6 +31,9 @@ class FavoriteModel {
     if (this.wishlist != null) {
       data['wishlist'] = this.wishlist!.map((v) => v.toJson()).toList();
     }
+    data['total_items'] = this.totalItems;
+    data['current_page'] = this.currentPage;
+    data['total_pages'] = this.totalPages;
     return data;
   }
 }
