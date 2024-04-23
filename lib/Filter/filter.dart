@@ -5,7 +5,7 @@ import 'package:firebase_project/utils/constants/font_styles.dart';
 import 'package:flutter/material.dart';
 
 class Filter extends StatefulWidget {
-  static const String routeName = 'favorite';
+  static const String routeName = 'filter';
   const Filter({super.key});
 
   @override

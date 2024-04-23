@@ -5,8 +5,10 @@ class FavoriteRepository extends BaseRepository {
   FavoriteRepository._();
   static final instance = FavoriteRepository._();
 
-  Future<FavoriteModel?> getFavorite() async {
-    final response = await api.get("api/wishlist/");
+  Future<FavoriteModel?> getFavorite(
+      {required int currentPage, required int limit}) async {
+    final response =
+        await api.get("api/wishlist/?page=$currentPage&limit=$limit");
     if (response.statusCode == 200) {
       return FavoriteModel.fromJson(response.data);
     }
