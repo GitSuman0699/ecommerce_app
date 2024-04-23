@@ -1,5 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:firebase_project/Favorite/favorite_controller.dart';
+import 'package:firebase_project/screens/Favorite/favorite_controller.dart';
 import 'package:firebase_project/data/model/favorite_model.dart';
 import 'package:firebase_project/data/model/home_model.dart';
 import 'package:firebase_project/utils/common_widgets/dialog_components.dart';

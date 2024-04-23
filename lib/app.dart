@@ -1,4 +1,4 @@
-import 'package:firebase_project/splash/splash_screen.dart';
+import 'package:firebase_project/screens/splash/splash_screen.dart';
 import 'package:firebase_project/utils/constants/app_routes.dart';
 import 'package:firebase_project/utils/local_storage/storage.dart';
 import 'package:firebase_project/utils/theme/theme.dart';

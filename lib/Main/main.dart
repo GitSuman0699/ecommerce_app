@@ -1,11 +1,11 @@
-import 'package:firebase_project/Orders/order.dart';
-import 'package:firebase_project/cart/cart.dart';
-import 'package:firebase_project/cart/cart_controller.dart';
-import 'package:firebase_project/catalogue/catalogue.dart';
-import 'package:firebase_project/Favorite/favorite.dart';
-import 'package:firebase_project/Profile/profile.dart';
+import 'package:firebase_project/screens/Orders/order.dart';
+import 'package:firebase_project/screens/cart/cart.dart';
+import 'package:firebase_project/screens/cart/cart_controller.dart';
+import 'package:firebase_project/screens/catalogue/catalogue.dart';
+import 'package:firebase_project/screens/Favorite/favorite.dart';
+import 'package:firebase_project/screens/Profile/profile.dart';
 import 'package:firebase_project/data/model/cart_model.dart';
-import 'package:firebase_project/home/home_screen.dart';
+import 'package:firebase_project/screens/home/home_screen.dart';
 import 'package:firebase_project/utils/common_widgets/circular_progress.dart';
 import 'package:firebase_project/utils/constants/colors.dart';
 import 'package:firebase_project/utils/constants/font_styles.dart';
@@ -38,7 +38,7 @@ class _MainState extends ConsumerState<Main> {
       data: (data) => Scaffold(
         body: myScreens.elementAt(currentIndex),
         // bottomNavigationBar: buildBottomNavigation(),
-        bottomSheet: buildBottomSheet(data!),
+        bottomSheet: buildBottomSheet(data),
         resizeToAvoidBottomInset: false,
       ),
     );
