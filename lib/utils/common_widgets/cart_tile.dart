@@ -1,5 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:firebase_project/cart/cart_controller.dart';
+import 'package:firebase_project/screens/cart/cart_controller.dart';
 import 'package:firebase_project/data/model/cart_model.dart';
 import 'package:firebase_project/utils/common_widgets/dialog_components.dart';
 import 'package:firebase_project/utils/constants/colors.dart';
