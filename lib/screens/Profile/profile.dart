@@ -1,4 +1,4 @@
-import 'package:firebase_project/screens/Orders/order.dart';
+import 'package:firebase_project/screens/orders/order.dart';
 import 'package:firebase_project/screens/PrivacyPolicy/privacy_policy.dart';
 import 'package:firebase_project/screens/Settings/settings.dart';
 import 'package:firebase_project/screens/ShippingAddress/shipping_address.dart';

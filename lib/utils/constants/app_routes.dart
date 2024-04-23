@@ -6,7 +6,8 @@ import 'package:firebase_project/Filter/filter.dart';
 import 'package:firebase_project/screens/Items/items.dart';
 import 'package:firebase_project/Main/main.dart';
 import 'package:firebase_project/screens/Notifications/notifications.dart';
-import 'package:firebase_project/screens/Orders/order.dart';
+import 'package:firebase_project/screens/order_detail/order_detail_screen.dart';
+import 'package:firebase_project/screens/orders/order.dart';
 import 'package:firebase_project/screens/PrivacyPolicy/privacy_policy.dart';
 import 'package:firebase_project/screens/Product/product.dart';
 import 'package:firebase_project/screens/Profile/profile.dart';
@@ -62,6 +63,8 @@ class AppRoutes {
               return const Settings();
             case OrderScreen.routeName:
               return const OrderScreen();
+            case OrderDetailScreen.routeName:
+              return const OrderDetailScreen();
             case NotificationScreen.routeName:
               return const NotificationScreen();
             case PrivacyPolicy.routeName:

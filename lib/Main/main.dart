@@ -1,4 +1,4 @@
-import 'package:firebase_project/screens/Orders/order.dart';
+import 'package:firebase_project/screens/orders/order.dart';
 import 'package:firebase_project/screens/cart/cart.dart';
 import 'package:firebase_project/screens/cart/cart_controller.dart';
 import 'package:firebase_project/screens/catalogue/catalogue.dart';

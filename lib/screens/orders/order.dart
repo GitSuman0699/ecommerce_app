@@ -1,5 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:firebase_project/screens/Orders/order_controller.dart';
+import 'package:firebase_project/screens/orders/order_controller.dart';
 import 'package:firebase_project/data/model/order_list_model.dart';
 import 'package:firebase_project/utils/common_widgets/circular_progress.dart';
 import 'package:firebase_project/utils/common_widgets/custom_app_bar.dart';
@@ -58,7 +58,8 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
           itemCount: data!.orders!.length,
           shrinkWrap: true,
           itemBuilder: (context, index) {
-            return _buildOrdersCard(data.orders![index]);
+            return GestureDetector(
+                onTap: () {}, child: _buildOrdersCard(data.orders![index]));
           }),
     );
   }
