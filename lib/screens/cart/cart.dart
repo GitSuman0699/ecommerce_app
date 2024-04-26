@@ -26,9 +26,9 @@ class Cart extends ConsumerWidget {
         backgroundColor: AppColors.white,
         appBar: _buildAppBar(context),
         body: data.carts!.isNotEmpty
-            ? _buildBody(context, data, ref)
+            ? _buildBody(context, data.carts!, ref)
             : Center(child: Text("No items in cart")),
-        bottomSheet: data.carts!.isNotEmpty
+        bottomNavigationBar: data.carts!.isNotEmpty
             ? _buildBottomSheet(context, data)
             : SizedBox.shrink(),
       ),
@@ -49,23 +49,6 @@ class Cart extends ConsumerWidget {
           Navigator.pop(context);
         },
       ),
-    );
-  }
-
-  Widget _buildBody(BuildContext context, CartModel? data, WidgetRef ref) {
-    return ListView.builder(
-      itemCount: data!.carts!.length,
-      shrinkWrap: true,
-      itemBuilder: (context, index) {
-        return Container(
-          color: AppColors.softGrey,
-          margin: EdgeInsets.symmetric(horizontal: 20.0.w, vertical: 10.0.h),
-          child: CartTile(
-            cart: data.carts![index],
-            ref: ref,
-          ),
-        );
-      },
     );
   }
 
@@ -114,4 +97,20 @@ class Cart extends ConsumerWidget {
       ),
     );
   }
+}
+
+Widget _buildBody(BuildContext context, List<Carts> data, WidgetRef ref) {
+  return ListView.builder(
+    itemCount: data.length,
+    shrinkWrap: true,
+    itemBuilder: (context, index) {
+      return Container(
+        color: AppColors.softGrey,
+        margin: EdgeInsets.symmetric(horizontal: 20.0.w, vertical: 10.0.h),
+        child: CartTile(
+          cart: data[index],
+        ),
+      );
+    },
+  );
 }

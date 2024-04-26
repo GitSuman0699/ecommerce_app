@@ -1,3 +1,4 @@
+import 'package:firebase_project/screens/CheckOut/order_success_screen.dart';
 import 'package:firebase_project/screens/cart/cart.dart';
 import 'package:firebase_project/screens/catalogue/catalogue.dart';
 import 'package:firebase_project/screens/CheckOut/check_out.dart';
@@ -12,12 +13,14 @@ import 'package:firebase_project/screens/PrivacyPolicy/privacy_policy.dart';
 import 'package:firebase_project/screens/Product/product.dart';
 import 'package:firebase_project/screens/Profile/profile.dart';
 import 'package:firebase_project/screens/Settings/settings.dart';
-import 'package:firebase_project/screens/ShippingAddress/shipping_address.dart';
+import 'package:firebase_project/screens/shipping/shipping_address.dart';
 import 'package:firebase_project/screens/SignUp/sign_up.dart';
 import 'package:firebase_project/screens/home/home_screen.dart';
 import 'package:firebase_project/screens/login/phone_screen.dart';
 import 'package:firebase_project/screens/login/verification_screen.dart';
 import 'package:firebase_project/screens/on_boarding/on_boarding_screen.dart';
+import 'package:firebase_project/screens/shipping/shipping_create.dart';
+import 'package:firebase_project/screens/shipping/shipping_update.dart';
 import 'package:firebase_project/screens/splash/splash_screen.dart';
 import 'package:firebase_project/utils/local_storage/storage.dart';
 import 'package:flutter/material.dart';
@@ -57,6 +60,8 @@ class AppRoutes {
               return const Cart();
             case CheckOut.routeName:
               return const CheckOut();
+            case OrderSucessScreen.routeName:
+              return const OrderSucessScreen();
             case SignUp.routeName:
               return const SignUp();
             case Settings.routeName:
@@ -70,7 +75,13 @@ class AppRoutes {
             case PrivacyPolicy.routeName:
               return const PrivacyPolicy();
             case ShippingAddress.routeName:
-              return const ShippingAddress();
+              return ShippingAddress(fromCheckout: settings.arguments as bool?);
+            case ShippingCreateScreen.routeName:
+              return ShippingCreateScreen(
+                  fromCheckout: settings.arguments as bool?);
+            case ShippingUpdateScreen.routeName:
+              return ShippingUpdateScreen(
+                  data: settings.arguments as Map<String, dynamic>);
             case OnBoarding.routeName:
               return const OnBoarding();
 

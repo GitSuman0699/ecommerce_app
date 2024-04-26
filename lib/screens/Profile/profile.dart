@@ -1,7 +1,7 @@
 import 'package:firebase_project/screens/orders/order.dart';
 import 'package:firebase_project/screens/PrivacyPolicy/privacy_policy.dart';
 import 'package:firebase_project/screens/Settings/settings.dart';
-import 'package:firebase_project/screens/ShippingAddress/shipping_address.dart';
+import 'package:firebase_project/screens/shipping/shipping_address.dart';
 import 'package:firebase_project/screens/SignUp/sign_up.dart';
 import 'package:firebase_project/screens/on_boarding/on_boarding_screen.dart';
 import 'package:firebase_project/utils/common_widgets/gradient_header.dart';

@@ -1,22 +1,41 @@
+import 'package:firebase_project/data/model/checkout_model.dart' as ch;
+import 'package:firebase_project/data/model/checkout_model.dart';
+import 'package:firebase_project/screens/CheckOut/checkout_controller.dart';
+import 'package:firebase_project/screens/CheckOut/order_success_screen.dart';
+import 'package:firebase_project/screens/CheckOut/payment_option_widget.dart';
+import 'package:firebase_project/screens/cart/cart.dart';
 import 'package:firebase_project/screens/orders/order.dart';
+import 'package:firebase_project/screens/shipping/shipping_address.dart';
 import 'package:firebase_project/utils/common_widgets/app_button.dart';
+import 'package:firebase_project/utils/common_widgets/cart_tile.dart';
+import 'package:firebase_project/utils/common_widgets/circular_progress.dart';
 import 'package:firebase_project/utils/common_widgets/custom_app_bar.dart';
 import 'package:firebase_project/utils/constants/colors.dart';
 import 'package:firebase_project/utils/constants/font_styles.dart';
+import 'package:firebase_project/utils/constants/functions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class CheckOut extends StatelessWidget {
+class CheckOut extends ConsumerWidget {
   static const String routeName = 'checkout';
   const CheckOut({super.key});
 
+  static final paymentOptionFormKey = GlobalKey<FormBuilderState>();
+
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.white,
-      appBar: _buildAppBar(context),
-      body: _buildBody(context),
-      bottomSheet: _buildBottomSheet(context),
+  Widget build(BuildContext context, WidgetRef ref) {
+    final checkout = ref.watch(checkoutProvider);
+    return checkout.when(
+      error: (error, stackTrace) => ErrorWidget(error),
+      loading: () => CircularProgress(),
+      data: (data) => Scaffold(
+        backgroundColor: AppColors.white,
+        appBar: _buildAppBar(context),
+        body: _buildCheckoutBody(context, data!),
+        bottomNavigationBar: _buildBottomSheet(context, ref, data),
+      ),
     );
   }
 
@@ -37,32 +56,125 @@ class CheckOut extends StatelessWidget {
     );
   }
 
-  Widget _buildBody(BuildContext context) {
+  Widget _buildCheckoutBody(BuildContext context, ch.CheckoutModel data) {
     return SizedBox(
       height: MediaQuery.of(context).size.height * .75.h,
       child: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.max,
           children: [
-            _buildAddress(context),
-            SizedBox(height: 5.0.h),
-            _buildDeliveryMethod(context),
-            SizedBox(height: 5.0.h),
-            _buildPaymentMethod(context),
+            _buildAddress(context, data),
+            _buildItems(context, data),
+            // _buildDeliveryMethod(context),
+            _buildPaymentOption(context, data),
+            _buildOrderSummary(context, data),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildAddress(BuildContext context) {
+  Widget _buildAddress(BuildContext context, ch.CheckoutModel data) {
     return Container(
       margin: const EdgeInsets.all(20.0),
       child: Column(
         children: [
           _buildTitle(context, Icons.location_on_outlined, 'Shipping Address'),
           SizedBox(height: 20.0.h),
-          _buildAddressCard(context),
+          shippingTile(data.address![0], context),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildItems(BuildContext context, CheckoutModel data) {
+    return Container(
+      margin: const EdgeInsets.all(20.0),
+      child: Column(
+        children: [
+          _buildTitle(context, Icons.shopping_bag, 'Items'),
+          SizedBox(height: 10.0.h),
+          ListView.builder(
+            physics: NeverScrollableScrollPhysics(),
+            itemCount: data.carts!.length,
+            shrinkWrap: true,
+            itemBuilder: (context, index) {
+              return Container(
+                color: AppColors.softGrey,
+                margin:
+                    EdgeInsets.symmetric(horizontal: 20.0.w, vertical: 10.0.h),
+                child: CartTile(
+                  cart: data.carts![index],
+                  fromCheckout: true,
+                ),
+              );
+            },
+          )
+
+          // shippingTile(data.address![0], context),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPaymentOption(BuildContext context, CheckoutModel data) {
+    return Container(
+      margin: const EdgeInsets.all(20.0),
+      child: Column(
+        children: [
+          _buildTitle(context, Icons.card_giftcard, 'Payment Method'),
+          SizedBox(height: 20.0.h),
+          PaymentOptionWidget(
+            formKey: paymentOptionFormKey,
+            paymentMethod: data.paymentMethod,
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOrderSummary(BuildContext context, CheckoutModel data) {
+    return Container(
+      margin: const EdgeInsets.all(20.0),
+      child: Column(
+        children: [
+          _buildTitle(context, Icons.blinds_closed_sharp, 'Order Summary'),
+          Container(
+            margin: const EdgeInsets.only(
+              left: 20.0,
+              top: 20.0,
+              right: 20.0,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  margin: const EdgeInsets.all(10.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Items', style: FontStyles.montserratSemiBold14()),
+                      Text(data.orderSummary!.totalItems.toString(),
+                          style: FontStyles.montserratSemiBold14()),
+                    ],
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.all(10.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Total price', style: FontStyles.montserratBold19()),
+                      Text(
+                        indianRupee(data.orderSummary!.totalAmount!.toString()),
+                        style: FontStyles.montserratBold19(),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -105,35 +217,6 @@ class CheckOut extends StatelessWidget {
           _buildTitle(context, Icons.payment_outlined, 'Payment Method'),
           SizedBox(height: 20.0.h),
           _buildPaymentCard(context),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAddressCard(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20.0),
-      decoration: BoxDecoration(
-          color: AppColors.white, borderRadius: BorderRadius.circular(10.0.r)),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Oleh Chabanov',
-                style: FontStyles.montserratSemiBold14(),
-              ),
-              const Icon(Icons.arrow_forward_ios_rounded)
-            ],
-          ),
-          const SizedBox(height: 5.0),
-          Text(
-            '225 Highland Aven\nSpringfield, IL 62704, USA',
-            style: FontStyles.montserratRegular14(),
-          )
         ],
       ),
     );
@@ -228,161 +311,117 @@ class CheckOut extends StatelessWidget {
     String title,
   ) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Icon(
-          icon,
-          color: AppColors.primary,
+        Row(
+          children: [
+            Icon(
+              icon,
+              color: AppColors.primary,
+            ),
+            SizedBox(width: 10.0.w),
+            Text(
+              title,
+              style: FontStyles.montserratBold19(),
+            )
+          ],
         ),
-        SizedBox(width: 10.0.w),
-        Text(
-          title,
-          style: FontStyles.montserratBold19(),
-        )
+        Visibility(
+          visible: title == 'Shipping Address' || title == 'Items',
+          child: InkWell(
+            onTap: () {
+              title == 'Items'
+                  ? Navigator.pop(context)
+                  : Navigator.pushNamed(
+                      context,
+                      ShippingAddress.routeName,
+                      arguments: true,
+                    );
+            },
+            child: Container(
+              padding: EdgeInsets.only(left: 8, right: 8, top: 4, bottom: 4),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+                border: Border.all(color: AppColors.softGrey),
+              ),
+              child: Text(title == 'Items' ? 'Edit' : 'Change'),
+            ),
+          ),
+        ),
       ],
     );
   }
 
-  Widget _buildBottomSheet(BuildContext context) {
+  Widget _buildBottomSheet(
+      BuildContext context, WidgetRef ref, CheckoutModel data) {
     var size = MediaQuery.of(context).size;
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20.0.r),
-          topRight: Radius.circular(20.0.r),
-        ),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            margin: const EdgeInsets.all(10.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Items', style: FontStyles.montserratSemiBold14()),
-                Text('\$239.98', style: FontStyles.montserratSemiBold14()),
-              ],
-            ),
+    return Visibility(
+      visible: ref.watch(paymentTypeProvider) != "",
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20.0.r),
+            topRight: Radius.circular(20.0.r),
           ),
-          Container(
-            margin: const EdgeInsets.all(10.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Delivery', style: FontStyles.montserratSemiBold14()),
-                Text('\$18', style: FontStyles.montserratSemiBold14()),
-              ],
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.all(10.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Total price', style: FontStyles.montserratBold19()),
-                Text('\$239.98', style: FontStyles.montserratBold19()),
-              ],
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.only(bottom: 10.0.h),
-            child: AppButton.button(
-              text: 'Pay',
-              color: AppColors.secondary,
-              height: 48,
-              width: size.width - 20.w,
-              onTap: () {
-                showDialog(
-                    context: context,
-                    builder: (context) {
-                      return makeAlert(context);
-                    });
-                // Navigator.pushNamed(context, CheckOut.routeName);
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  static Widget _buildPopContent(BuildContext context) {
-    return Column(
-      children: [
-        Text(
-          'Success',
-          style: FontStyles.montserratBold25(),
         ),
-        SizedBox(height: 10.0.h),
-        Text(
-          'Your order will be delivered soon.',
-          style: FontStyles.montserratRegular14(),
-        ),
-        Text(
-          'It can be tracked in the "Orders" section.',
-          style: FontStyles.montserratRegular14(),
-        ),
-        SizedBox(height: 10.0.h),
-        Container(
-          margin: EdgeInsets.only(bottom: 10.0.h),
+        child: Container(
+          margin: EdgeInsets.only(left: 10, right: 10, bottom: 10),
           child: AppButton.button(
-            text: 'Continue Shopping',
-            color: AppColors.secondary,
-            height: 48.h,
-            width: 200.w,
-            onTap: () {
-              // Navigator.pushReplacementNamed(context, Main.routeName);
-              Navigator.pop(context);
+            text: ref.watch(paymentTypeProvider) == "COD"
+                ? 'Place Order'
+                : "Continue",
+            color: AppColors.primary,
+            height: 48,
+            width: size.width - 20.w,
+            onTap: () async {
+              if (ref.watch(paymentTypeProvider) == "COD") {
+                await ref
+                    .read(placeOrderCODProvider(data).future)
+                    .then((value) {
+                  if (value['status'] == 200) {
+                    Navigator.pushNamedAndRemoveUntil(
+                        context, OrderSucessScreen.routeName, (route) => false);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(value['message'])));
+                  }
+                });
+              } else {
+                // Send to payment screen
+              }
+
+              // showDialog(
+              //     barrierDismissible: false,
+              //     context: context,
+              //     builder: (context) {
+              //       return makeAlert(context);
+              //     });
+              // Navigator.pushNamed(context, CheckOut.routeName);
             },
           ),
         ),
-        SizedBox(height: 15.0.h),
-        GestureDetector(
-          onTap: () {
-            Navigator.pushReplacementNamed(context, OrderScreen.routeName);
-          },
-          child: Text(
-            'Go to Orders',
-            style: FontStyles.montserratBold17().copyWith(color: Colors.grey),
-          ),
-        ),
-        SizedBox(height: 10.0.h),
-      ],
+      ),
     );
   }
 
-  Widget makeAlert(BuildContext context) {
-    return AlertDialog(
-      shape: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20.0.r),
-          borderSide: const BorderSide(color: Colors.transparent)),
-      content: Container(
-        height: 120.0.h,
-        width: 50.0.w,
-        decoration: BoxDecoration(
-            color: AppColors.primary,
-            gradient: const LinearGradient(
-                colors: [AppColors.primary, AppColors.primary],
-                begin: Alignment.bottomLeft,
-                end: Alignment.topRight,
-                stops: [0, 1]),
-            borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(120.0.r),
-                bottomRight: Radius.circular(120.0.r))),
-        child: Center(
-          child: Image(
-            image: const AssetImage('assets/checkOut/check.png'),
-            height: 70.0.h,
-          ),
-        ),
-      ),
-      contentPadding: EdgeInsets.only(left: 20.0.w, right: 20.0.w),
-      // actionsAlignment: MainAxisAlignment.center,
-      actions: [
-        _buildPopContent(context),
-      ],
-    );
-  }
+  // static Widget _buildPopContent(BuildContext context) {
+  //   return
+  // }
+
+  // Widget makeAlert(BuildContext context) {
+  //   return AlertDialog(
+  //     shape: OutlineInputBorder(
+  //       borderRadius: BorderRadius.circular(20.0.r),
+  //       borderSide: const BorderSide(color: Colors.transparent),
+  //     ),
+  //     content: OrderSucessScreen(),
+  //     contentPadding: EdgeInsets.only(left: 20.0.w, right: 20.0.w),
+  //     // actionsAlignment: MainAxisAlignment.center,
+  //     actions: [
+  //       _buildPopContent(context),
+  //     ],
+  //   );
+  // }
 }

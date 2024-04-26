@@ -1,8 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_project/screens/Product/add_to_cart_button.dart';
+import 'package:firebase_project/screens/Product/product_color_and_size.dart';
 import 'package:firebase_project/screens/Product/product_controller.dart';
 import 'package:firebase_project/data/model/product_detail_model.dart';
+import 'package:firebase_project/screens/cart/cart_controller.dart';
 import 'package:firebase_project/utils/common_widgets/app_button.dart';
-import 'package:firebase_project/utils/common_widgets/cart_tile.dart';
 import 'package:firebase_project/utils/common_widgets/item_widget.dart';
 import 'package:firebase_project/utils/common_widgets/shimmer_effect.dart';
 import 'package:firebase_project/utils/constants/colors.dart';
@@ -25,20 +27,17 @@ class Product extends ConsumerWidget {
         final productDetail = ref.watch(productDetailProvider(productId));
         return productDetail.when(
           error: (error, stackTrace) => ErrorWidget(error),
-          loading: () => Center(
-            child: CircularProgressIndicator(),
+          loading: () => Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
           ),
           data: (data) => Scaffold(
             backgroundColor: AppColors.white,
             body: _buildBody(context, data!),
-            bottomSheet: _buildBottomSheet(
-                context: context,
-                ref: ref,
-                data: data,
-                favorite: true,
-                onTap: () {
-                  _buildCartModalSheet(context, data, ref);
-                }),
+            bottomNavigationBar: AddTOCartButton(
+              product: data.product!,
+            ),
           ),
         );
       },
@@ -88,7 +87,8 @@ class Product extends ConsumerWidget {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  _buildColorAndSizeSelection(context, data),
+                  ProductColorAndSize(product: data.product!),
+                  // _buildColorAndSizeSelection(context, data),
                   SizedBox(height: 10.0.h),
                   _buildProductDetail(context, data),
                   SizedBox(height: 10.0.h),
@@ -163,24 +163,6 @@ class Product extends ConsumerWidget {
     );
   }
 
-  Widget _buildColorAndSizeSelection(
-      BuildContext context, ProductDetailModel data) {
-    return Container(
-      color: AppColors.white,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20.0.h, vertical: 20.0.h),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildColorSelection(context, data),
-            SizedBox(height: 20.0.h),
-            _buildSizes(context, data),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildPrice(BuildContext context, String price) {
     return Padding(
       padding: EdgeInsets.only(left: 20.0.w, top: 10.0.h),
@@ -220,8 +202,11 @@ class Product extends ConsumerWidget {
                 height: 47.h,
                 width: 47.w,
                 decoration: BoxDecoration(
-                    image: DecorationImage(image: AssetImage(colors[index])),
-                    borderRadius: BorderRadius.circular(10.0.r)),
+                  image: DecorationImage(
+                    image: AssetImage(colors[index]),
+                  ),
+                  borderRadius: BorderRadius.circular(10.0.r),
+                ),
               );
             },
             separatorBuilder: (context, index) {
@@ -472,7 +457,7 @@ class Product extends ConsumerWidget {
                         .read(productDetailProvider(productId).notifier)
                         .addFavorite(productId: productId)
                         .then((value) {
-                      if (value['status_code'] == 200) {
+                      if (value['status'] == 200) {
                         ref.invalidate(productDetailProvider);
                       }
                     });

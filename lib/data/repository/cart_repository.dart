@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_project/data/model/cart_model.dart';
 import 'package:firebase_project/data/repository/base_repository.dart';
 
@@ -9,6 +11,14 @@ class CartRepository extends BaseRepository {
     final response = await api.get("api/cart/all");
     if (response.statusCode == 200) {
       return CartModel.fromJson(response.data);
+    }
+    return null;
+  }
+
+  Future addCart({required Map<String, dynamic> cartData}) async {
+    final response = await api.post("api/cart/add", data: cartData);
+    if (response.statusCode == 200) {
+      return response.data;
     }
     return null;
   }

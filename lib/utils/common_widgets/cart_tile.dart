@@ -6,18 +6,24 @@ import 'package:firebase_project/utils/constants/colors.dart';
 import 'package:firebase_project/utils/constants/font_styles.dart';
 import 'package:firebase_project/utils/constants/functions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
-class CartTile extends StatelessWidget {
-  final WidgetRef ref;
+class CartTile extends ConsumerWidget {
+  final bool? fromCheckout;
   final Carts cart;
-  const CartTile({super.key, required this.cart, required this.ref});
+  const CartTile({
+    super.key,
+    required this.cart,
+    this.fromCheckout = false,
+  });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Slidable(
+      enabled: !fromCheckout!,
       endActionPane: ActionPane(
         motion: ScrollMotion(),
         children: [
@@ -88,52 +94,56 @@ class CartTile extends StatelessWidget {
               ),
             ),
           ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              IconButton(
-                splashRadius: 1.0,
-                onPressed: () async {
-                  final cartResponse = await ref
-                      .watch(cartProvider.notifier)
-                      .addQuantity(cart: cart, context: context);
-
-                  if (cartResponse['status'] == 200) {
-                    ref.invalidate(cartProvider);
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(cartResponse['message'])));
-                  }
-                },
-                color: AppColors.darkGrey,
-                icon: Icon(Icons.add_circle_outline),
-              ),
-              Text(
-                "${cart.quantity}",
-                style: TextStyle(color: AppColors.primary),
-              ),
-              IconButton(
-                splashRadius: 1.0,
-                onPressed: () async {
-                  final cartResponse = await ref
-                      .watch(cartProvider.notifier)
-                      .removeQuantity(cart: cart, context: context);
-                  if (cartResponse != null) {
-                    if (cartResponse['status'] == 200) {
-                      ref.invalidate(cartProvider);
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(cartResponse['message']),
-                        ),
-                      );
+          Visibility(
+            visible: !fromCheckout!,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  splashRadius: 1.0,
+                  onPressed: () async {
+                    final cartResponse = await ref
+                        .watch(cartProvider.notifier)
+                        .addQuantity(cart: cart, context: context);
+                    if (cartResponse != null) {
+                      if (cartResponse['status'] == 200) {
+                        ref.invalidate(cartProvider);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(cartResponse['message'])));
+                      }
                     }
-                  }
-                },
-                color: AppColors.darkGrey,
-                icon: Icon(Icons.remove_circle_outline),
-              ),
-            ],
+                  },
+                  color: AppColors.darkGrey,
+                  icon: Icon(Icons.add_circle_outline),
+                ),
+                Text(
+                  "${cart.quantity}",
+                  style: TextStyle(color: AppColors.primary),
+                ),
+                IconButton(
+                  splashRadius: 1.0,
+                  onPressed: () async {
+                    final cartResponse = await ref
+                        .watch(cartProvider.notifier)
+                        .removeQuantity(cart: cart, context: context);
+                    if (cartResponse != null) {
+                      if (cartResponse['status'] == 200) {
+                        ref.invalidate(cartProvider);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(cartResponse['message']),
+                          ),
+                        );
+                      }
+                    }
+                  },
+                  color: AppColors.darkGrey,
+                  icon: Icon(Icons.remove_circle_outline),
+                ),
+              ],
+            ),
           ),
         ],
       ),

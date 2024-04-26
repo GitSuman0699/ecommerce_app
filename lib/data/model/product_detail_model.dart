@@ -29,6 +29,7 @@ class Product {
   int? stock;
   List<Attributes>? attributes;
   bool? wishlist;
+  bool? cart;
 
   Product(
       {this.id,
@@ -38,7 +39,8 @@ class Product {
       this.image,
       this.stock,
       this.attributes,
-      this.wishlist});
+      this.wishlist,
+      this.cart});
 
   Product.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -54,6 +56,7 @@ class Product {
       });
     }
     wishlist = json['wishlist'];
+    cart = json['cart'];
   }
 
   Map<String, dynamic> toJson() {
@@ -68,6 +71,7 @@ class Product {
       data['attributes'] = this.attributes!.map((v) => v.toJson()).toList();
     }
     data['wishlist'] = this.wishlist;
+    data['cart'] = this.cart;
     return data;
   }
 }

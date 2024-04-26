@@ -2,9 +2,9 @@ class CartModel {
   int? status;
   List<Carts>? carts;
   double? totalAmount;
-  int? totalQuanity;
+  int? totalItems;
 
-  CartModel({this.status, this.carts, this.totalAmount, this.totalQuanity});
+  CartModel({this.status, this.carts, this.totalAmount, this.totalItems});
 
   CartModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
@@ -15,7 +15,7 @@ class CartModel {
       });
     }
     totalAmount = json['total_amount'];
-    totalQuanity = json['total_quanity'];
+    totalItems = json['total_items'];
   }
 
   Map<String, dynamic> toJson() {
@@ -25,7 +25,7 @@ class CartModel {
       data['carts'] = this.carts!.map((v) => v.toJson()).toList();
     }
     data['total_amount'] = this.totalAmount;
-    data['total_quanity'] = this.totalQuanity;
+    data['total_items'] = this.totalItems;
     return data;
   }
 }

@@ -257,7 +257,7 @@ class _MainState extends ConsumerState<Main> {
                           .copyWith(fontSize: 11.0, color: AppColors.white),
                       children: [
                         TextSpan(
-                          text: '${data.totalQuanity} Items',
+                          text: '${data.totalItems} Items',
                           style: FontStyles.montserratRegular14()
                               .copyWith(fontSize: 11.0, color: AppColors.white),
                         )
