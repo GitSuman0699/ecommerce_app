@@ -1,4 +1,4 @@
-import 'package:firebase_project/Main/main.dart';
+import 'package:firebase_project/screens/root/root_screen.dart';
 import 'package:firebase_project/screens/auth/authentication_service.dart';
 import 'package:firebase_project/screens/auth/signup/signup_screen.dart';
 import 'package:firebase_project/utils/common_widgets/app_button.dart';

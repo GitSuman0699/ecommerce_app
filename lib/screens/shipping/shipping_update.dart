@@ -1,5 +1,5 @@
 import 'package:firebase_project/data/model/shipping_address_edit_model.dart';
-import 'package:firebase_project/screens/CheckOut/checkout_controller.dart';
+import 'package:firebase_project/screens/checkout/checkout_controller.dart';
 import 'package:firebase_project/screens/shipping/shipping_address_controller.dart';
 import 'package:firebase_project/utils/common_widgets/app_button.dart';
 import 'package:firebase_project/utils/common_widgets/circular_progress.dart';

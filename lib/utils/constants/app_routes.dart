@@ -1,18 +1,21 @@
-import 'package:firebase_project/screens/CheckOut/order_success_screen.dart';
+import 'package:firebase_project/screens/checkout/check_out_screen.dart';
+import 'package:firebase_project/screens/checkout/order_success_screen.dart';
+import 'package:firebase_project/screens/product_detail/product_all_review.dart';
 import 'package:firebase_project/screens/cart/cart.dart';
 import 'package:firebase_project/screens/catalogue/catalogue.dart';
-import 'package:firebase_project/screens/CheckOut/check_out.dart';
 import 'package:firebase_project/screens/Favorite/favorite.dart';
-import 'package:firebase_project/Filter/filter.dart';
+import 'package:firebase_project/filter/filter_screen.dart';
 import 'package:firebase_project/screens/Items/items.dart';
-import 'package:firebase_project/Main/main.dart';
+import 'package:firebase_project/screens/root/root_screen.dart';
 import 'package:firebase_project/screens/Notifications/notifications.dart';
+import 'package:firebase_project/screens/catalogue/catalouge_screen.dart';
 import 'package:firebase_project/screens/order_detail/order_detail_screen.dart';
 import 'package:firebase_project/screens/orders/order.dart';
-import 'package:firebase_project/screens/PrivacyPolicy/privacy_policy.dart';
-import 'package:firebase_project/screens/Product/product.dart';
-import 'package:firebase_project/screens/Profile/profile.dart';
+import 'package:firebase_project/screens/privacy_policy/privacy_policy.dart';
+import 'package:firebase_project/screens/product_detail/product_detail.dart';
+import 'package:firebase_project/screens/profile/profile.dart';
 import 'package:firebase_project/screens/Settings/settings.dart';
+import 'package:firebase_project/screens/review/review_product.dart';
 import 'package:firebase_project/screens/shipping/shipping_address.dart';
 import 'package:firebase_project/screens/SignUp/sign_up.dart';
 import 'package:firebase_project/screens/home/home_screen.dart';
@@ -22,6 +25,7 @@ import 'package:firebase_project/screens/on_boarding/on_boarding_screen.dart';
 import 'package:firebase_project/screens/shipping/shipping_create.dart';
 import 'package:firebase_project/screens/shipping/shipping_update.dart';
 import 'package:firebase_project/screens/splash/splash_screen.dart';
+import 'package:firebase_project/data/model/product_detail_model.dart' as pd;
 import 'package:firebase_project/utils/local_storage/storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -44,14 +48,16 @@ class AppRoutes {
               return const HomeScreen();
             case Main.routeName:
               return const Main();
-            case Catalogue.routeName:
-              return const Catalogue();
+            case CatalogueScreen.routeName:
+              return CatalogueScreen(
+                categoryId: settings.arguments as int,
+              );
             case Items.routeName:
               return const Items();
             case Filter.routeName:
               return const Filter();
-            case Product.routeName:
-              return Product(productId: settings.arguments as int);
+            case ProductDetail.routeName:
+              return ProductDetail(productId: settings.arguments as int);
             case Favorite.routeName:
               return const Favorite();
             case Profile.routeName:
@@ -72,8 +78,14 @@ class AppRoutes {
               return const OrderDetailScreen();
             case NotificationScreen.routeName:
               return const NotificationScreen();
+            case AllReviewScreen.routeName:
+              return AllReviewScreen(productId: settings.arguments as int);
             case PrivacyPolicy.routeName:
               return const PrivacyPolicy();
+            case ReviewProductScreen.routeName:
+              return ReviewProductScreen(
+                product: settings.arguments as pd.Product,
+              );
             case ShippingAddress.routeName:
               return ShippingAddress(fromCheckout: settings.arguments as bool?);
             case ShippingCreateScreen.routeName:

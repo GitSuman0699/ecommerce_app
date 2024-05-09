@@ -6,11 +6,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod/src/async_notifier.dart';
 
 final favoriteProvider =
-    AsyncNotifierProvider.autoDispose<FavoriteData, List<Wishlist>>(
-  () {
-    return FavoriteData();
-  },
-);
+    AsyncNotifierProvider.autoDispose<FavoriteData, List<Wishlist>>(() {
+  return FavoriteData();
+});
 
 class FavoriteData extends AutoDisposeAsyncNotifier<List<Wishlist>> {
   List<Wishlist> wishlist = [];

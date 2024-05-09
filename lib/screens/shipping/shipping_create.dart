@@ -1,4 +1,4 @@
-import 'package:firebase_project/screens/CheckOut/checkout_controller.dart';
+import 'package:firebase_project/screens/checkout/checkout_controller.dart';
 import 'package:firebase_project/screens/shipping/shipping_address_controller.dart';
 import 'package:firebase_project/utils/common_widgets/app_button.dart';
 import 'package:firebase_project/utils/common_widgets/custom_app_bar.dart';

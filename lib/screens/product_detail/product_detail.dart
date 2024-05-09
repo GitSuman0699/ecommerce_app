@@ -1,9 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:firebase_project/screens/Product/add_to_cart_button.dart';
-import 'package:firebase_project/screens/Product/product_color_and_size.dart';
-import 'package:firebase_project/screens/Product/product_controller.dart';
-import 'package:firebase_project/data/model/product_detail_model.dart';
+import 'package:firebase_project/data/model/review_model.dart';
+import 'package:firebase_project/screens/product_detail/add_to_cart_button.dart';
+import 'package:firebase_project/screens/product_detail/product_all_review.dart';
+import 'package:firebase_project/screens/product_detail/product_color_and_size.dart';
+import 'package:firebase_project/screens/product_detail/product_controller.dart';
+import 'package:firebase_project/data/model/product_detail_model.dart' as pr;
 import 'package:firebase_project/screens/cart/cart_controller.dart';
+import 'package:firebase_project/screens/review/review_product.dart';
 import 'package:firebase_project/utils/common_widgets/app_button.dart';
 import 'package:firebase_project/utils/common_widgets/item_widget.dart';
 import 'package:firebase_project/utils/common_widgets/shimmer_effect.dart';
@@ -11,14 +14,16 @@ import 'package:firebase_project/utils/constants/colors.dart';
 import 'package:firebase_project/utils/constants/font_styles.dart';
 import 'package:firebase_project/utils/constants/functions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:firebase_project/data/model/review_model.dart' as rw;
 
 // ignore: must_be_immutable
-class Product extends ConsumerWidget {
+class ProductDetail extends ConsumerWidget {
   static const String routeName = 'product';
   final int productId;
-  const Product({super.key, required this.productId});
+  const ProductDetail({super.key, required this.productId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -44,7 +49,7 @@ class Product extends ConsumerWidget {
     );
   }
 
-  Widget _buildBody(BuildContext context, ProductDetailModel data) {
+  Widget _buildBody(BuildContext context, pr.ProductDetailModel data) {
     var screenHeight = MediaQuery.of(context).size.height;
     var screenWidth = MediaQuery.of(context).size.width;
     return NestedScrollView(
@@ -92,7 +97,7 @@ class Product extends ConsumerWidget {
                   SizedBox(height: 10.0.h),
                   _buildProductDetail(context, data),
                   SizedBox(height: 10.0.h),
-                  // _buildReviews(context),
+                  _buildReviews(context, data),
                   SizedBox(height: 10.0.h),
                   // _buildRelatedProduct(context)
                 ],
@@ -104,7 +109,73 @@ class Product extends ConsumerWidget {
     );
   }
 
-  Widget _buildAboutProduct(BuildContext context, ProductDetailModel data) {
+  Widget _buildReviews(BuildContext context, pr.ProductDetailModel data) {
+    return Container(
+      decoration: BoxDecoration(
+          color: AppColors.white, borderRadius: BorderRadius.circular(10.0.r)),
+      padding: const EdgeInsets.all(20.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Reviews',
+                style: FontStyles.montserratBold19()
+                    .copyWith(color: const Color(0xFF34283E)),
+              ),
+              GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, ReviewProductScreen.routeName,
+                      arguments: data.product);
+                },
+                child: Chip(
+                  padding: EdgeInsets.all(0),
+                  labelPadding:
+                      EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                  label: Text(
+                    'Rate',
+                    style: FontStyles.montserratBold12().copyWith(),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 10.0.h),
+          data.reviews!.isEmpty
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("No Reviews"),
+                  ],
+                )
+              : reviewListBuilder(data: data),
+          data.reviews!.isEmpty
+              ? SizedBox.shrink()
+              : Divider(
+                  color: Colors.grey[200],
+                ),
+          Visibility(
+            visible: data.reviews!.isNotEmpty && data.reviews!.length >= 5,
+            child: ListTile(
+              onTap: () {
+                Navigator.of(context).pushNamed(AllReviewScreen.routeName,
+                    arguments: data.product!.id);
+              },
+              title: Text("See all review"),
+              trailing: Icon(
+                Icons.arrow_forward_ios,
+                size: 16,
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAboutProduct(BuildContext context, pr.ProductDetailModel data) {
     return Container(
       color: AppColors.white,
       child: Column(
@@ -116,7 +187,7 @@ class Product extends ConsumerWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildRatings(context),
+                _buildRatings(context, data),
                 Text(
                   data.product!.stock! != 0 ? 'In Stock' : 'Out Of Stock',
                   style: FontStyles.montserratBold12()
@@ -138,28 +209,30 @@ class Product extends ConsumerWidget {
     );
   }
 
-  Widget _buildRatings(BuildContext context) {
-    return SizedBox(
-      height: 20.0.h,
-      child: Row(
-        children: [
-          ListView.builder(
-              itemCount: 5,
-              shrinkWrap: true,
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) {
-                return const Icon(
-                  Icons.star,
-                  color: AppColors.secondary,
-                  size: 14.0,
-                );
-              }),
-          Text(
-            ' 8 reviews',
-            style: FontStyles.montserratRegular12(),
+  Widget _buildRatings(BuildContext context, pr.ProductDetailModel data) {
+    return Row(
+      children: [
+        RatingBar.builder(
+          updateOnDrag: true,
+          ignoreGestures: true,
+          direction: Axis.horizontal,
+          itemSize: 15,
+          initialRating: double.parse(data.overallRating!),
+          allowHalfRating: true,
+          itemCount: 5,
+          itemBuilder: (context, _) => Icon(
+            Icons.star,
+            color: Colors.amber,
           ),
-        ],
-      ),
+          onRatingUpdate: (rating) {
+            null;
+          },
+        ),
+        Text(
+          ' ${data.overallRating} rating',
+          style: FontStyles.montserratRegular12(),
+        ),
+      ],
     );
   }
 
@@ -173,7 +246,8 @@ class Product extends ConsumerWidget {
     );
   }
 
-  Widget _buildColorSelection(BuildContext context, ProductDetailModel data) {
+  Widget _buildColorSelection(
+      BuildContext context, pr.ProductDetailModel data) {
     List<String> colors = [
       'assets/product/pic1.png',
       'assets/product/pic2.png',
@@ -218,7 +292,7 @@ class Product extends ConsumerWidget {
     );
   }
 
-  Widget _buildSizes(BuildContext context, ProductDetailModel data) {
+  Widget _buildSizes(BuildContext context, pr.ProductDetailModel data) {
     List<String> titles = ['XXS', 'XS', 'S', 'M', 'L', 'XL'];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -259,7 +333,7 @@ class Product extends ConsumerWidget {
     );
   }
 
-  Widget _buildProductDetail(BuildContext context, ProductDetailModel data) {
+  Widget _buildProductDetail(BuildContext context, pr.ProductDetailModel data) {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.white,
@@ -277,12 +351,6 @@ class Product extends ConsumerWidget {
           Text(
             data.product!.shortDescription!,
             style: FontStyles.montserratRegular14(),
-          ),
-          const Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.keyboard_arrow_down_rounded),
-            ],
           ),
         ],
       ),
@@ -423,7 +491,7 @@ class Product extends ConsumerWidget {
       {BuildContext? context,
       Function()? onTap,
       bool? favorite,
-      ProductDetailModel? data,
+      pr.ProductDetailModel? data,
       WidgetRef? ref}) {
     return Container(
       width: double.infinity,
@@ -478,7 +546,7 @@ class Product extends ConsumerWidget {
   }
 
   _buildCartModalSheet(
-      BuildContext context, ProductDetailModel data, WidgetRef ref) {
+      BuildContext context, pr.ProductDetailModel data, WidgetRef ref) {
     showModalBottomSheet(
       backgroundColor: AppColors.white,
       isScrollControlled: true,
@@ -542,4 +610,70 @@ class Product extends ConsumerWidget {
       },
     );
   }
+}
+
+ListView reviewListBuilder(
+    {pr.ProductDetailModel? data, List<rw.Reviews>? review}) {
+  return ListView.separated(
+    separatorBuilder: (context, index) => Divider(
+      color: Colors.grey[200],
+    ),
+    padding: EdgeInsets.all(0),
+    physics: NeverScrollableScrollPhysics(),
+    shrinkWrap: true,
+    itemCount: data?.reviews?.length ?? review!.length,
+    itemBuilder: (context, index) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            data?.reviews?[index].username ?? review![index].username!,
+            style: FontStyles.montserratSemiBold14(),
+          ),
+          // SizedBox(height: 5.0.h),
+          _buildReviewRatings(
+              context: context,
+              data: data?.reviews?[index],
+              review: review?[index]),
+          SizedBox(height: 10.0.h),
+          Text(
+            data?.reviews?[index].review ?? review![index].review!,
+            style: FontStyles.montserratRegular14(),
+          ),
+          SizedBox(height: 10.0.h),
+        ],
+      );
+    },
+  );
+}
+
+Widget _buildReviewRatings(
+    {required BuildContext context, pr.Reviews? data, rw.Reviews? review}) {
+  return SizedBox(
+    height: 20.0.h,
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        ListView.builder(
+          itemCount: 5,
+          shrinkWrap: true,
+          scrollDirection: Axis.horizontal,
+          itemBuilder: (context, index) {
+            return Icon(
+              Icons.star,
+              color: index < (data?.rating ?? review!.rating!)
+                  ? Colors.amber
+                  : AppColors.secondary,
+              size: 14.0,
+            );
+          },
+        ),
+        Text(
+          data?.date ?? review!.date!,
+          style: FontStyles.montserratRegular12(),
+        ),
+      ],
+    ),
+  );
 }

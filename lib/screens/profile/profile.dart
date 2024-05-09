@@ -1,5 +1,5 @@
 import 'package:firebase_project/screens/orders/order.dart';
-import 'package:firebase_project/screens/PrivacyPolicy/privacy_policy.dart';
+import 'package:firebase_project/screens/privacy_policy/privacy_policy.dart';
 import 'package:firebase_project/screens/Settings/settings.dart';
 import 'package:firebase_project/screens/shipping/shipping_address.dart';
 import 'package:firebase_project/screens/SignUp/sign_up.dart';

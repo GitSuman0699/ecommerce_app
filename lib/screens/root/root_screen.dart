@@ -1,9 +1,11 @@
+import 'dart:io';
+
 import 'package:firebase_project/screens/orders/order.dart';
 import 'package:firebase_project/screens/cart/cart.dart';
 import 'package:firebase_project/screens/cart/cart_controller.dart';
 import 'package:firebase_project/screens/catalogue/catalogue.dart';
 import 'package:firebase_project/screens/Favorite/favorite.dart';
-import 'package:firebase_project/screens/Profile/profile.dart';
+import 'package:firebase_project/screens/profile/profile.dart';
 import 'package:firebase_project/data/model/cart_model.dart';
 import 'package:firebase_project/screens/home/home_screen.dart';
 import 'package:firebase_project/utils/common_widgets/circular_progress.dart';
@@ -22,6 +24,40 @@ class Main extends ConsumerStatefulWidget {
 }
 
 class _MainState extends ConsumerState<Main> {
+  bool exitApp() {
+    exit(0);
+  }
+
+  final DateTime now = DateTime.now();
+  DateTime? currentBackPressTime;
+
+  bool doublePressExit() {
+    DateTime now = DateTime.now();
+    if (currentBackPressTime == null ||
+        now.difference(currentBackPressTime!) > const Duration(seconds: 2)) {
+      currentBackPressTime = now;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Press again to exit'),
+        ),
+      );
+
+      return false;
+    }
+    return exitApp();
+  }
+
+  bool onWillPop() {
+    if (currentIndex != 0) {
+      setState(() {
+        currentIndex = 0;
+      });
+      return false;
+    } else {
+      return doublePressExit();
+    }
+  }
+
   int currentIndex = 0;
   List<Widget> myScreens = [
     const HomeScreen(),
@@ -36,9 +72,16 @@ class _MainState extends ConsumerState<Main> {
       error: (error, stackTrace) => ErrorWidget(error),
       loading: () => CircularProgress(),
       data: (data) => Scaffold(
-        body: myScreens.elementAt(currentIndex),
+        body: PopScope(
+          canPop: false,
+          onPopInvoked: (didPop) {
+            onWillPop();
+          },
+          child: myScreens.elementAt(currentIndex),
+        ),
+
         // bottomNavigationBar: buildBottomNavigation(),
-        bottomSheet: buildBottomSheet(data),
+        bottomNavigationBar: buildBottomSheet(data),
         resizeToAvoidBottomInset: false,
       ),
     );

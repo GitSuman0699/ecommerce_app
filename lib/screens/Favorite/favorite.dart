@@ -1,5 +1,5 @@
 import 'package:firebase_project/screens/Favorite/favorite_controller.dart';
-import 'package:firebase_project/screens/Product/product.dart';
+import 'package:firebase_project/screens/product_detail/product_detail.dart';
 import 'package:firebase_project/data/model/favorite_model.dart';
 import 'package:firebase_project/utils/common_widgets/circular_progress.dart';
 import 'package:firebase_project/utils/common_widgets/custom_app_bar.dart';
@@ -60,7 +60,7 @@ class _FavoriteState extends ConsumerState<Favorite> {
       child: CustomAppBar(
         isHome: false,
         title: 'Favorite',
-        fixedHeight: 88.0.h,
+        fixedHeight: 88.0,
         enableSearchField: false,
         // leadingIcon: Icons.arrow_back,
         leadingOnTap: () {
@@ -139,7 +139,7 @@ class _FavoriteState extends ConsumerState<Favorite> {
         itemBuilder: (_, index) {
           return GestureDetector(
             onTap: () {
-              Navigator.pushNamed(context, Product.routeName,
+              Navigator.pushNamed(context, ProductDetail.routeName,
                   arguments: data[index].productId);
             },
             child: ItemWidget(

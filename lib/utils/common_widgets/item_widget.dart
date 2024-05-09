@@ -115,7 +115,14 @@ class _ItemWidgetState extends ConsumerState<ItemWidget> {
                                   .deleteFavorite(
                                       productId: widget.wishlist!.id!)
                                   .then((value) {
-                                if (value['status_code'] == 200) {
+                                if (value['status'] == 200) {
+                                  ref
+                                      .read(favoriteProvider.notifier)
+                                      .wishlist
+                                      .clear();
+                                  ref
+                                      .read(favoriteProvider.notifier)
+                                      .currentPage = 1;
                                   ref.invalidate(favoriteProvider);
                                 }
                               });

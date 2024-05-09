@@ -1,5 +1,5 @@
 import 'package:firebase_project/data/model/product_detail_model.dart';
-import 'package:firebase_project/screens/Product/product_controller.dart';
+import 'package:firebase_project/screens/product_detail/product_controller.dart';
 import 'package:firebase_project/screens/cart/cart.dart';
 import 'package:firebase_project/screens/cart/cart_controller.dart';
 import 'package:firebase_project/utils/common_widgets/app_button.dart';
@@ -50,52 +50,57 @@ class _AddTOCartButtonState extends ConsumerState<AddTOCartButton> {
             color: AppColors.primary,
             height: 48.0.h,
             width: 215.0.w,
-            onTap: () async {
-              if (addedToCart) {
-                Navigator.pushNamed(context, Cart.routeName);
-              } else {
-                if (ref.read(attributeDataProvider).isNotEmpty) {
-                  await ref
-                      .read(cartProvider.notifier)
-                      .addCart(product: widget.product)
-                      .then((value) {
-                    if (value['status'] == 200) {
-                      ref.invalidate(cartProvider);
-                      setState(() {
-                        addedToCart = true;
-                      });
-                    }
-                  });
-                } else {
-                  ref.read(attributeDataProvider.notifier).update((state) {
-                    for (var i = 0;
-                        i < widget.product.attributes!.length;
-                        i++) {
-                      state.add(
-                        {
-                          "name": widget.product.attributes![i].name,
-                          "values": widget.product.attributes![i].values![0],
-                        },
-                      );
-                    }
+            onTap: widget.product.stock == 0 && widget.product.cart == false
+                ? null
+                : () async {
+                    if (addedToCart) {
+                      Navigator.pushNamed(context, Cart.routeName);
+                    } else {
+                      if (ref.read(attributeDataProvider).isNotEmpty) {
+                        await ref
+                            .read(cartProvider.notifier)
+                            .addCart(product: widget.product)
+                            .then((value) {
+                          if (value['status'] == 200) {
+                            ref.invalidate(cartProvider);
+                            setState(() {
+                              addedToCart = true;
+                            });
+                          }
+                        });
+                      } else {
+                        ref
+                            .read(attributeDataProvider.notifier)
+                            .update((state) {
+                          for (var i = 0;
+                              i < widget.product.attributes!.length;
+                              i++) {
+                            state.add(
+                              {
+                                "name": widget.product.attributes![i].name,
+                                "values":
+                                    widget.product.attributes![i].values![0],
+                              },
+                            );
+                          }
 
-                    return state;
-                  });
+                          return state;
+                        });
 
-                  await ref
-                      .read(cartProvider.notifier)
-                      .addCart(product: widget.product)
-                      .then((value) {
-                    if (value['status'] == 200) {
-                      ref.invalidate(cartProvider);
-                      setState(() {
-                        addedToCart = true;
-                      });
+                        await ref
+                            .read(cartProvider.notifier)
+                            .addCart(product: widget.product)
+                            .then((value) {
+                          if (value['status'] == 200) {
+                            ref.invalidate(cartProvider);
+                            setState(() {
+                              addedToCart = true;
+                            });
+                          }
+                        });
+                      }
                     }
-                  });
-                }
-              }
-            },
+                  },
           ),
           GestureDetector(
             onTap: () async {

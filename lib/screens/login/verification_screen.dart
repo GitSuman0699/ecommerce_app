@@ -1,4 +1,4 @@
-import 'package:firebase_project/Main/main.dart';
+import 'package:firebase_project/screens/root/root_screen.dart';
 import 'package:firebase_project/screens/auth/authentication_service.dart';
 import 'package:firebase_project/screens/auth/login/login_controller.dart';
 import 'package:firebase_project/screens/login/phone_screen.dart';

@@ -1,13 +1,23 @@
 class ProductDetailModel {
   int? status;
   Product? product;
+  List<Reviews>? reviews;
+  String? overallRating;
 
-  ProductDetailModel({this.status, this.product});
+  ProductDetailModel(
+      {this.status, this.product, this.reviews, this.overallRating});
 
   ProductDetailModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     product =
         json['product'] != null ? new Product.fromJson(json['product']) : null;
+    if (json['reviews'] != null) {
+      reviews = <Reviews>[];
+      json['reviews'].forEach((v) {
+        reviews!.add(new Reviews.fromJson(v));
+      });
+    }
+    overallRating = json['overall_rating'];
   }
 
   Map<String, dynamic> toJson() {
@@ -16,6 +26,10 @@ class ProductDetailModel {
     if (this.product != null) {
       data['product'] = this.product!.toJson();
     }
+    if (this.reviews != null) {
+      data['reviews'] = this.reviews!.map((v) => v.toJson()).toList();
+    }
+    data['overall_rating'] = this.overallRating;
     return data;
   }
 }
@@ -91,6 +105,31 @@ class Attributes {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['name'] = this.name;
     data['values'] = this.values;
+    return data;
+  }
+}
+
+class Reviews {
+  String? username;
+  String? review;
+  int? rating;
+  String? date;
+
+  Reviews({this.username, this.review, this.rating, this.date});
+
+  Reviews.fromJson(Map<String, dynamic> json) {
+    username = json['username'];
+    review = json['review'];
+    rating = json['rating'];
+    date = json['date'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['username'] = this.username;
+    data['review'] = this.review;
+    data['rating'] = this.rating;
+    data['date'] = this.date;
     return data;
   }
 }

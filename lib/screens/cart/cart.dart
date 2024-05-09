@@ -1,7 +1,7 @@
 import 'dart:io';
-import 'package:firebase_project/screens/CheckOut/check_out.dart';
 import 'package:firebase_project/screens/cart/cart_controller.dart';
 import 'package:firebase_project/data/model/cart_model.dart';
+import 'package:firebase_project/screens/checkout/check_out_screen.dart';
 import 'package:firebase_project/utils/common_widgets/app_button.dart';
 import 'package:firebase_project/utils/common_widgets/cart_tile.dart';
 import 'package:firebase_project/utils/common_widgets/circular_progress.dart';
@@ -42,7 +42,7 @@ class Cart extends ConsumerWidget {
       child: CustomAppBar(
         isHome: false,
         title: 'Cart',
-        fixedHeight: 88.0.h,
+        fixedHeight: 88.0,
         enableSearchField: false,
         leadingIcon: Platform.isIOS ? Icons.arrow_back_ios : Icons.arrow_back,
         leadingOnTap: () {

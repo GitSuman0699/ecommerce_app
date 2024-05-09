@@ -1,4 +1,4 @@
-import 'package:firebase_project/Main/main.dart';
+import 'package:firebase_project/screens/root/root_screen.dart';
 import 'package:firebase_project/screens/login/phone_screen.dart';
 import 'package:firebase_project/utils/local_storage/storage.dart';
 import 'package:flutter/material.dart';

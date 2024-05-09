@@ -1,9 +1,9 @@
 import 'package:firebase_project/data/model/checkout_model.dart' as ch;
 import 'package:firebase_project/data/model/checkout_model.dart';
-import 'package:firebase_project/screens/CheckOut/checkout_controller.dart';
-import 'package:firebase_project/screens/CheckOut/order_success_screen.dart';
-import 'package:firebase_project/screens/CheckOut/payment_option_widget.dart';
 import 'package:firebase_project/screens/cart/cart.dart';
+import 'package:firebase_project/screens/checkout/checkout_controller.dart';
+import 'package:firebase_project/screens/checkout/order_success_screen.dart';
+import 'package:firebase_project/screens/checkout/payment_option_widget.dart';
 import 'package:firebase_project/screens/orders/order.dart';
 import 'package:firebase_project/screens/shipping/shipping_address.dart';
 import 'package:firebase_project/utils/common_widgets/app_button.dart';
@@ -18,14 +18,25 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class CheckOut extends ConsumerWidget {
+class CheckOut extends ConsumerStatefulWidget {
   static const String routeName = 'checkout';
   const CheckOut({super.key});
 
-  static final paymentOptionFormKey = GlobalKey<FormBuilderState>();
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() => _CheckOutState();
+}
+
+class _CheckOutState extends ConsumerState<CheckOut> {
+  @override
+  void deactivate() {
+    super.deactivate();
+    ref.invalidate(checkoutShippingAddressProvider);
+  }
+
+  final paymentOptionFormKey = GlobalKey<FormBuilderState>();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final checkout = ref.watch(checkoutProvider);
     return checkout.when(
       error: (error, stackTrace) => ErrorWidget(error),
@@ -33,7 +44,7 @@ class CheckOut extends ConsumerWidget {
       data: (data) => Scaffold(
         backgroundColor: AppColors.white,
         appBar: _buildAppBar(context),
-        body: _buildCheckoutBody(context, data!),
+        body: _buildCheckoutBody(context, data!, ref),
         bottomNavigationBar: _buildBottomSheet(context, ref, data),
       ),
     );
@@ -56,14 +67,15 @@ class CheckOut extends ConsumerWidget {
     );
   }
 
-  Widget _buildCheckoutBody(BuildContext context, ch.CheckoutModel data) {
+  Widget _buildCheckoutBody(
+      BuildContext context, ch.CheckoutModel data, WidgetRef ref) {
     return SizedBox(
       height: MediaQuery.of(context).size.height * .75.h,
       child: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.max,
           children: [
-            _buildAddress(context, data),
+            _buildAddress(context, data, ref),
             _buildItems(context, data),
             // _buildDeliveryMethod(context),
             _buildPaymentOption(context, data),
@@ -74,14 +86,16 @@ class CheckOut extends ConsumerWidget {
     );
   }
 
-  Widget _buildAddress(BuildContext context, ch.CheckoutModel data) {
+  Widget _buildAddress(
+      BuildContext context, ch.CheckoutModel data, WidgetRef ref) {
     return Container(
       margin: const EdgeInsets.all(20.0),
       child: Column(
         children: [
           _buildTitle(context, Icons.location_on_outlined, 'Shipping Address'),
           SizedBox(height: 20.0.h),
-          shippingTile(data.address![0], context),
+          shippingTile(
+              ref.read(checkoutShippingAddressProvider), context, false, ref),
         ],
       ),
     );

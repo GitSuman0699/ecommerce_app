@@ -1,5 +1,5 @@
 import 'package:firebase_project/data/model/checkout_model.dart';
-import 'package:firebase_project/screens/CheckOut/checkout_controller.dart';
+import 'package:firebase_project/screens/checkout/checkout_controller.dart';
 import 'package:firebase_project/utils/constants/colors.dart';
 import 'package:firebase_project/utils/device/ui_helper.dart';
 import 'package:flutter/material.dart';

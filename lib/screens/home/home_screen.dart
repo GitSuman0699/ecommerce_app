@@ -1,10 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_project/screens/Notifications/notifications.dart';
-import 'package:firebase_project/screens/Product/product.dart';
+import 'package:firebase_project/screens/product_detail/product_detail.dart';
 import 'package:firebase_project/screens/auth/authentication_service.dart';
 import 'package:firebase_project/screens/catalogue/catalogue.dart';
 import 'package:firebase_project/data/model/home_model.dart';
 import 'package:firebase_project/dummy/dummy_data.dart';
+import 'package:firebase_project/screens/catalogue/catalouge_screen.dart';
 import 'package:firebase_project/screens/home/home_controller.dart';
 import 'package:firebase_project/utils/common_widgets/app_title.dart';
 import 'package:firebase_project/utils/common_widgets/catalogue_widget.dart';
@@ -191,30 +192,30 @@ class _HomeState extends State<HomeScreen> {
             borderRadius: BorderRadius.circular(10.0.r),
             child: makeSlider(banner: banner),
           ),
-          Positioned(
-              top: AppDeviceUtils.getScreenHeight(context) * .020.h,
-              left: 20.0,
-              child: Text(
-                'Fashion Sale',
-                style: FontStyles.montserratBold25()
-                    .copyWith(color: AppColors.white),
-              )),
+          // Positioned(
+          //     top: AppDeviceUtils.getScreenHeight(context) * .020.h,
+          //     left: 20.0,
+          //     child: Text(
+          //       'Fashion Sale',
+          //       style: FontStyles.montserratBold25()
+          //           .copyWith(color: AppColors.white),
+          //     )),
           Positioned(
             top: AppDeviceUtils.getScreenHeight(context) * .070.h,
             left: 20.0.w,
             child: Row(
               children: [
                 Text(
-                  'See More',
+                  'Fashion Sale',
                   style: FontStyles.montserratBold12().copyWith(
                     color: AppColors.secondary,
                   ),
                 ),
-                Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  size: 12.0.h,
-                  color: AppColors.secondary,
-                ),
+                // Icon(
+                //   Icons.arrow_forward_ios_rounded,
+                //   size: 12.0.h,
+                //   color: AppColors.secondary,
+                // ),
               ],
             ),
           ),
@@ -224,56 +225,50 @@ class _HomeState extends State<HomeScreen> {
   }
 
   Widget _buildCatalogue({required List<Categories> category}) {
-    return GestureDetector(
-      onTap: () {
-        // Navigator.pushNamed(context, Catalogue.routeName,
-        //     arguments: [true, true]);
-      },
-      child: Container(
-        margin: EdgeInsets.only(
-            top: 25.0.h, left: 20.h, right: 20.0.h, bottom: 17.h),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Catalogue',
-                  style: FontStyles.montserratBold19().copyWith(
-                    color: const Color(0xFF34283E),
-                  ),
+    return Container(
+      margin:
+          EdgeInsets.only(top: 25.0.h, left: 20.h, right: 20.0.h, bottom: 17.h),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Catalogue',
+                style: FontStyles.montserratBold19().copyWith(
+                  color: const Color(0xFF34283E),
                 ),
-                GestureDetector(
+              ),
+              Text(
+                'See All ',
+                style: FontStyles.montserratBold12()
+                    .copyWith(color: const Color(0xFF9B9B9B)),
+              ),
+            ],
+          ),
+          SizedBox(
+            width: AppDeviceUtils.getScreenWidth(context),
+            height: 97.h,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: category.length,
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                return GestureDetector(
                   onTap: () {
-                    Navigator.pushNamed(context, Catalogue.routeName,
-                        arguments: [true, true]);
+                    Navigator.pushNamed(context, CatalogueScreen.routeName,
+                        arguments: category[index].id);
                   },
-                  child: Text(
-                    'See All ',
-                    style: FontStyles.montserratBold12()
-                        .copyWith(color: const Color(0xFF9B9B9B)),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(
-              width: AppDeviceUtils.getScreenWidth(context),
-              height: 97.h,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: category.length,
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  return CatalogueWidget(
+                  child: CatalogueWidget(
                     height: 88.h,
                     width: 88.w,
                     category: category[index],
-                  );
-                },
-              ),
+                  ),
+                );
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -295,30 +290,28 @@ class _HomeState extends State<HomeScreen> {
                 .copyWith(color: const Color(0xFF34283E)),
           ),
           SizedBox(height: 10.0.h),
-          SizedBox(
-            child: GridView.builder(
-              shrinkWrap: true,
-              itemCount: products.length,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisExtent: 270.0.h,
-                  crossAxisSpacing: 10.0.w),
-              itemBuilder: (_, index) {
-                return GestureDetector(
-                    onTap: () {
-                      Navigator.pushNamed(
-                        context,
-                        Product.routeName,
-                        arguments: products[index].id,
-                      );
-                    },
-                    child: ItemWidget(
-                      product: products[index],
-                      favoriteIcon: false,
-                    ));
-              },
-            ),
+          GridView.builder(
+            shrinkWrap: true,
+            itemCount: products.length,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisExtent: 270.0.h,
+                crossAxisSpacing: 10.0.w),
+            itemBuilder: (_, index) {
+              return GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      ProductDetail.routeName,
+                      arguments: products[index].id,
+                    );
+                  },
+                  child: ItemWidget(
+                    product: products[index],
+                    favoriteIcon: false,
+                  ));
+            },
           ),
         ],
       ),

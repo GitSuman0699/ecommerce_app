@@ -1,4 +1,5 @@
 import 'package:firebase_project/data/model/shipping_address_model.dart';
+import 'package:firebase_project/screens/checkout/checkout_controller.dart';
 import 'package:firebase_project/screens/shipping/shipping_address_controller.dart';
 import 'package:firebase_project/screens/shipping/shipping_create.dart';
 import 'package:firebase_project/screens/shipping/shipping_update.dart';
@@ -198,49 +199,79 @@ class _ShippingAddressState extends ConsumerState<ShippingAddress> {
           ),
         ],
       ),
-      child: shippingTile(data, context),
+      child: shippingTile(data, context, widget.fromCheckout ?? false, ref),
     );
   }
 }
 
-Container shippingTile(Address data, BuildContext context) {
-  return Container(
-    padding: const EdgeInsets.all(20.0),
-    decoration: BoxDecoration(
-        color: AppColors.softGrey, borderRadius: BorderRadius.circular(10.0)),
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              data.name!,
-              style: FontStyles.montserratBold17().copyWith(fontSize: 14.0),
-            ),
-            Visibility(
-              visible: data.defaultAddress == 1 ? true : false,
-              child: Container(
-                padding: EdgeInsets.only(left: 8, right: 8, top: 2, bottom: 2),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: AppColors.primary)),
-                child: Text(
-                  '✓ Default',
-                  style: Theme.of(context)
-                      .textTheme
-                      .labelSmall!
-                      .copyWith(letterSpacing: .2),
-                ),
-              ),
-            )
-          ],
+Row shippingTile(
+    Address data, BuildContext context, bool fromCheckout, WidgetRef ref) {
+  return Row(
+    children: [
+      Visibility(
+        visible: fromCheckout,
+        child: Radio(
+          value: ref.watch(checkoutShippingAddressProvider).id == data.id
+              ? true
+              : false,
+          groupValue: true,
+          onChanged: (value) async {
+            AlertAction? action = await DialogComponents.confirmDialog(
+                context, "Are you sure\nYou want to change the address");
+
+            if (action == AlertAction.ok) {
+              ref
+                  .read(checkoutShippingAddressProvider.notifier)
+                  .update((state) => data);
+              Navigator.pop(context);
+            }
+          },
         ),
-        const SizedBox(height: 5.0),
-        Text(
-            '${data.address}, ${data.city}\n${data.state}, ${data.country}, ${data.pincode}')
-      ],
-    ),
+      ),
+      Expanded(
+        child: Container(
+          padding: const EdgeInsets.all(20.0),
+          decoration: BoxDecoration(
+              color: AppColors.softGrey,
+              borderRadius: BorderRadius.circular(10.0)),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    data.name!,
+                    style:
+                        FontStyles.montserratBold17().copyWith(fontSize: 14.0),
+                  ),
+                  Visibility(
+                    visible: data.defaultAddress == 1 ? true : false,
+                    child: Container(
+                      padding:
+                          EdgeInsets.only(left: 8, right: 8, top: 2, bottom: 2),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: AppColors.primary)),
+                      child: Text(
+                        '✓ Default',
+                        style: Theme.of(context)
+                            .textTheme
+                            .labelSmall!
+                            .copyWith(letterSpacing: .2),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+              const SizedBox(height: 5.0),
+              Text(
+                  '${data.address}, ${data.city}\n${data.state}, ${data.country}, ${data.pincode}')
+            ],
+          ),
+        ),
+      ),
+    ],
   );
 }
